@@ -1,4 +1,4 @@
-﻿# 🧠 DataMind — Ultimate AI Data Analyst v1.0
+# 🧠 DataMind — Ultimate AI Data Analyst v1.0
 
 [![Python Version](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/Framework-Streamlit-red.svg)](https://streamlit.io/)
@@ -17,39 +17,68 @@ The core of DataMind is a modular backend architecture where each component gove
 
 ```mermaid
 graph TD
-    User([User Dataset Upload]) --> Loader[data_loader.py]
-    Loader --> Profiler[profiler.py]
-    
-    subgraph Core Analysis Modules
-        Profiler --> EDA[eda.py]
-        Profiler --> TS[time_series.py]
-        Profiler --> Viz[visualizations.py]
-        Profiler --> PCA[dimensionality.py]
+    %% Styling configurations
+    classDef ui fill:#4f46e5,stroke:#818cf8,stroke-width:2px,color:#fff;
+    classDef core fill:#0f172a,stroke:#38bdf8,stroke-width:1.5px,color:#e2e8f0;
+    classDef logic fill:#1e293b,stroke:#a855f7,stroke-width:1.5px,color:#e2e8f0;
+    classDef output fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#34d399;
+    classDef storage fill:#3b0764,stroke:#c084fc,stroke-width:1.5px,color:#e2e8f0;
+
+    %% Elements definition
+    User([📁 User Dataset Upload]) ::: ui
+    App[🧠 app.py <br> Streamlit Orchestration & UI] ::: ui
+    CSS[assets/style.css <br> Dark-Mode Styling] ::: ui
+    Help[core/feature_help.py <br> Contextual Documentation Map] ::: ui
+    AI[core/ai_agent.py <br> Gemini REST Assistant] ::: ui
+
+    subgraph Ingestion & Profiling [Ingestion & Profiling Layer]
+        Loader[core/data_loader.py <br> Multi-format Reader & Type Detect] ::: core
+        Profiler[core/profiler.py <br> Descriptive Statistics & RAM Check] ::: core
     end
-    
-    subgraph Pipeline Operations
-        EDA --> Cleaner[cleaner.py]
-        TS --> Cleaner
-        Cleaner --> FE[feature_engineer.py]
+
+    subgraph Engines [Core Analytics & Computation Engines]
+        EDA[core/eda.py <br> Heatmaps, Skew & Distributions] ::: logic
+        TS[core/time_series.py <br> STL Decomposition, Lags & ADF] ::: logic
+        Viz[core/visualizations.py <br> Scatter Matrix, 3D & Violins] ::: logic
+        PCA[core/dimensionality.py <br> 2D/3D PCA & Explained Variance] ::: logic
     end
-    
-    subgraph Evaluation & Export
-        FE --> ML_Readiness[ml_readiness.py]
-        ML_Readiness --> HTML_Gen[report_generator.py]
-        ML_Readiness --> Notebook[notebook_exporter.py]
-        ML_Readiness --> ML_Train[ml_engine.py]
+
+    subgraph Pipeline [Pre-processing & Pipeline Transformation]
+        Cleaner[core/cleaner.py <br> Duplication, IQR & Null Imputation] ::: core
+        FE[core/feature_engineer.py <br> Encoders, Scalers, custom eval & bins] ::: core
     end
-    
-    subgraph UI & UX Layers
-        Streamlit[app.py] <--> Style[style.css]
-        Streamlit <--> Help[feature_help.py]
-        Streamlit <--> AI_Agent[ai_agent.py]
+
+    subgraph Model_Validation [Validation & Downstream Processing]
+        Readiness[core/ml_readiness.py <br> 5-Point Radar scorecard] ::: logic
+        MLEngine[core/ml_engine.py <br> Model training & evaluations] ::: logic
     end
+
+    subgraph Export [Interactive Outputs & Codegen]
+        HTML[core/report_generator.py <br> standalone HTML reports] ::: output
+        Notebook[core/notebook_exporter.py <br> reproducible .ipynb notebook] ::: output
+        FinalCSV[Analysis-Ready CSV/Excel] ::: output
+    end
+
+    %% Routing lines
+    User --> Loader
+    Loader --> Profiler
     
-    Loader -.-> Streamlit
-    Core Analysis Modules -.-> Streamlit
-    Pipeline Operations -.-> Streamlit
-    Evaluation & Export -.-> Streamlit
+    App <--> CSS
+    App <--> Help
+    App <--> AI
+    
+    Profiler --> App
+    App --> Engines
+    App --> Pipeline
+    App --> Model_Validation
+    App --> Export
+    
+    %% Processing flow
+    Profiler --> Cleaner
+    Cleaner --> FE
+    FE --> Readiness
+    Readiness --> MLEngine
+    Readiness --> Export
 ```
 
 ### File Hierarchy & Modular System Roles
